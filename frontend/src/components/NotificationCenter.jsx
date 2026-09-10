@@ -1,12 +1,111 @@
 import React, { useEffect, useState } from "react";
 import { Bell, X, CheckCheck, Trash2 } from "lucide-react";
-const KEY="yashos_notifications_v1";
-export const notify=(notification)=>window.dispatchEvent(new CustomEvent("yashos-notify",{detail:{id:crypto.randomUUID(),title:notification.title||"YashOS",message:notification.message||"",type:notification.type||"info",time:Date.now()}}));
-function NotificationCenter(){
- const [items,setItems]=useState(()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}});const [open,setOpen]=useState(false);
- useEffect(()=>{localStorage.setItem(KEY,JSON.stringify(items));},[items]);
- useEffect(()=>{const h=e=>{setItems(a=>[e.detail,...a].slice(0,30));setOpen(true)};window.addEventListener("yashos-notify",h);return()=>window.removeEventListener("yashos-notify",h)},[]);
- const clear=()=>setItems([]); const remove=id=>setItems(a=>a.filter(n=>n.id!==id));
- return <div className="relative"><button aria-label="Notifications" onClick={()=>setOpen(v=>!v)} className="relative grid h-10 w-10 place-items-center rounded-xl hover:bg-white/10"><Bell size={19}/>{items.length>0&&<span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-400 ring-2 ring-slate-900"/>}</button>{open&&<div className="absolute right-0 top-12 z-[300] w-80 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/95 shadow-2xl backdrop-blur-xl"><div className="flex items-center justify-between border-b border-white/10 p-3"><span className="text-sm font-semibold">Notifications</span><div className="flex gap-1"><button onClick={clear} title="Clear all" className="rounded-lg p-2 hover:bg-white/10"><Trash2 size={15}/></button><button onClick={()=>setOpen(false)} className="rounded-lg p-2 hover:bg-white/10"><X size={15}/></button></div></div><div className="max-h-80 overflow-auto">{!items.length?<div className="p-8 text-center text-xs text-white/40"><CheckCheck size={28} className="mx-auto mb-2"/>You're all caught up.</div>:items.map(n=><div key={n.id} className="border-b border-white/5 p-3 hover:bg-white/[.04]"><div className="flex items-start gap-2"><div className="min-w-0 flex-1"><div className="text-xs font-semibold">{n.title}</div><p className="mt-1 text-xs leading-5 text-white/60">{n.message}</p><time className="mt-1 block text-[10px] text-white/30">{new Date(n.time).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</time></div><button onClick={()=>remove(n.id)} className="text-white/30 hover:text-white"><X size={13}/></button></div></div>)}</div></div>}</div>;
+const KEY = "yashos_notifications_v1";
+export const notify = (notification) =>
+  window.dispatchEvent(
+    new CustomEvent("yashos-notify", {
+      detail: {
+        id: crypto.randomUUID(),
+        title: notification.title || "YashOS",
+        message: notification.message || "",
+        type: notification.type || "info",
+        time: Date.now(),
+      },
+    }),
+  );
+function NotificationCenter() {
+  const [items, setItems] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || [];
+    } catch {
+      return [];
+    }
+  });
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    localStorage.setItem(KEY, JSON.stringify(items));
+  }, [items]);
+  useEffect(() => {
+    const h = (e) => {
+      setItems((a) => [e.detail, ...a].slice(0, 30));
+      setOpen(true);
+    };
+    window.addEventListener("yashos-notify", h);
+    return () => window.removeEventListener("yashos-notify", h);
+  }, []);
+  const clear = () => setItems([]);
+  const remove = (id) => setItems((a) => a.filter((n) => n.id !== id));
+  return (
+    <div className="relative">
+      <button
+        aria-label="Notifications"
+        onClick={() => setOpen((v) => !v)}
+        className="relative grid h-10 w-10 place-items-center rounded-xl hover:bg-white/10"
+      >
+        <Bell size={19} />
+        {items.length > 0 && (
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-400 ring-2 ring-slate-900" />
+        )}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-12 z-[300] w-80 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/95 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center justify-between border-b border-white/10 p-3">
+            <span className="text-sm font-semibold">Notifications</span>
+            <div className="flex gap-1">
+              <button
+                onClick={clear}
+                title="Clear all"
+                className="rounded-lg p-2 hover:bg-white/10"
+              >
+                <Trash2 size={15} />
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                className="rounded-lg p-2 hover:bg-white/10"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          </div>
+          <div className="max-h-80 overflow-auto">
+            {!items.length ? (
+              <div className="p-8 text-center text-xs text-white/40">
+                <CheckCheck size={28} className="mx-auto mb-2" />
+                You're all caught up.
+              </div>
+            ) : (
+              items.map((n) => (
+                <div
+                  key={n.id}
+                  className="border-b border-white/5 p-3 hover:bg-white/[.04]"
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-semibold">{n.title}</div>
+                      <p className="mt-1 text-xs leading-5 text-white/60">
+                        {n.message}
+                      </p>
+                      <time className="mt-1 block text-[10px] text-white/30">
+                        {new Date(n.time).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    </div>
+                    <button
+                      onClick={() => remove(n.id)}
+                      className="text-white/30 hover:text-white"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 export default NotificationCenter;

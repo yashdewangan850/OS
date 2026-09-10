@@ -259,7 +259,7 @@ function Desktop({
       <header className="yashos-topbar relative z-[140] flex h-14 shrink-0 items-center justify-between border-b px-3 backdrop-blur-xl sm:h-16 sm:px-5">
         <div className="flex min-w-0 items-baseline gap-4">
           <strong className="yashos-brand text-[23px] tracking-tight">
-            YashOS
+            WebOS
           </strong>
           <span className="yashos-subtitle hidden text-xs md:inline">
             Work • Explore • Create
@@ -278,9 +278,9 @@ function Desktop({
         <div className="yashos-user flex min-w-[150px] items-center justify-end gap-2 text-sm sm:gap-3">
           <NotificationCenter />
           <span className="grid h-9 w-9 place-items-center rounded-full bg-violet-800 font-bold text-white">
-            YD
+            OS
           </span>
-          <span className="hidden sm:inline">Yash</span>
+          <span className="hidden sm:inline">WebOS</span>
         </div>
       </header>
       <section
@@ -299,7 +299,7 @@ function Desktop({
       </section>
       <div className="pointer-events-none absolute left-1/2 top-[42%] z-[5] hidden w-[min(480px,62vw)] -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/10 bg-slate-950/20 p-8 text-center shadow-2xl backdrop-blur-md sm:block">
         <p className="mb-2 text-[11px] tracking-[2px] text-white/60">WELCOME</p>
-        <h1 className="mb-2 text-5xl font-bold tracking-tight">YashOS</h1>
+        <h1 className="mb-2 text-5xl font-bold tracking-tight">WebOS</h1>
         <p className="text-sm leading-6 text-white/75">
           Your browser-based desktop environment.
         </p>
