@@ -1,17 +1,202 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Music2, Play, Pause, SkipBack, SkipForward, Volume2, Upload, Trash2 } from "lucide-react";
+import {
+  Music2,
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  Upload,
+  Trash2,
+} from "lucide-react";
 
 function Music() {
-  const [tracks, setTracks] = useState(() => { try { return JSON.parse(localStorage.getItem("yashos_music_v1")) || []; } catch { return []; } });
-  const [current, setCurrent] = useState(0), [playing, setPlaying] = useState(false), [volume, setVolume] = useState(.8);
+  const [tracks, setTracks] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("yashos_music_v1")) || [];
+    } catch {
+      return [];
+    }
+  });
+  const [current, setCurrent] = useState(0),
+    [playing, setPlaying] = useState(false),
+    [volume, setVolume] = useState(0.8);
   const audioRef = useRef(null);
-  useEffect(() => localStorage.setItem("yashos_music_v1", JSON.stringify(tracks.map(({url,...t})=>t))), [tracks]);
-  useEffect(() => { if(audioRef.current) audioRef.current.volume=volume; }, [volume]);
-  const track=tracks[current];
-  const playIndex=(i)=>{ if(!tracks[i]) return; setCurrent(i); setPlaying(false); setTimeout(()=>audioRef.current?.play().then(()=>setPlaying(true)).catch(()=>{}),0); };
-  const toggle=()=>{ if(!audioRef.current)return; if(playing){audioRef.current.pause();setPlaying(false)}else{audioRef.current.play().then(()=>setPlaying(true)).catch(()=>{})} };
-  const upload=(e)=>{const files=[...e.target.files].filter(f=>f.type.startsWith("audio/")); if(files.length)setTracks(t=>[...t,...files.map(f=>({id:crypto.randomUUID(),name:f.name,size:f.size,type:f.type,url:URL.createObjectURL(f)}))]);e.target.value=""};
-  const remove=(i)=>{setTracks(t=>t.filter((_,n)=>n!==i));setCurrent(0);setPlaying(false)};
-  return <div className="flex h-full min-h-0 bg-slate-950 text-white"><aside className="w-48 shrink-0 border-r border-white/10 bg-white/[.03] p-4"><div className="mb-6 flex items-center gap-2 font-semibold"><Music2 size={20}/>Music</div><label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs hover:bg-white/15"><Upload size={15}/>Add music<input hidden type="file" accept="audio/*" multiple onChange={upload}/></label><p className="mt-4 text-[11px] leading-5 text-white/45">Upload audio files and build a local playlist.</p></aside><section className="flex min-w-0 flex-1 flex-col"><div className="flex-1 overflow-auto p-5"><h2 className="text-lg font-semibold">Your playlist</h2>{!tracks.length?<div className="mt-8 rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-white/45">No songs yet. Add an audio file.</div>:<div className="mt-4 space-y-2">{tracks.map((t,i)=><div key={t.id} className={`flex items-center gap-3 rounded-xl p-3 ${i===current?'bg-white/10':'hover:bg-white/[.06]'}`}><button onClick={()=>playIndex(i)} className="grid h-9 w-9 place-items-center rounded-lg bg-white/10">{i===current&&playing?<Pause size={16}/>:<Play size={16}/>}</button><button onClick={()=>playIndex(i)} className="min-w-0 flex-1 truncate text-left text-sm">{t.name}</button><button onClick={()=>remove(i)} className="rounded-lg p-2 text-white/45 hover:bg-red-500/15"><Trash2 size={15}/></button></div>)}</div>}</div><div className="border-t border-white/10 bg-white/[.03] p-4"><div className="mb-3 truncate text-center text-xs text-white/65">{track?.name||"Nothing playing"}</div><div className="flex items-center justify-center gap-5"><button disabled={!tracks.length} onClick={()=>playIndex(Math.max(0,current-1))}><SkipBack/></button><button disabled={!track} onClick={toggle} className="grid h-11 w-11 place-items-center rounded-full bg-white text-slate-950 disabled:opacity-30">{playing?<Pause size={19}/>:<Play size={19}/>}</button><button disabled={!tracks.length} onClick={()=>playIndex(Math.min(tracks.length-1,current+1))}><SkipForward/></button><div className="ml-4 flex items-center gap-2"><Volume2 size={16}/><input aria-label="Volume" type="range" min="0" max="1" step=".01" value={volume} onChange={e=>setVolume(+e.target.value)}/></div></div></div>{track&&<audio ref={audioRef} src={track.url} onEnded={()=>current<tracks.length-1?playIndex(current+1):setPlaying(false)}/>}</section></div>;
+  useEffect(
+    () =>
+      localStorage.setItem(
+        "yashos_music_v1",
+        JSON.stringify(tracks.map(({ url, ...t }) => t)),
+      ),
+    [tracks],
+  );
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
+  const track = tracks[current];
+  const playIndex = (i) => {
+    if (!tracks[i]) return;
+    setCurrent(i);
+    setPlaying(false);
+    setTimeout(
+      () =>
+        audioRef.current
+          ?.play()
+          .then(() => setPlaying(true))
+          .catch(() => {}),
+      0,
+    );
+  };
+  const toggle = () => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      audioRef.current
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => {});
+    }
+  };
+  const upload = (e) => {
+    const files = [...e.target.files].filter((f) =>
+      f.type.startsWith("audio/"),
+    );
+    if (files.length)
+      setTracks((t) => [
+        ...t,
+        ...files.map((f) => ({
+          id: crypto.randomUUID(),
+          name: f.name,
+          size: f.size,
+          type: f.type,
+          url: URL.createObjectURL(f),
+        })),
+      ]);
+    e.target.value = "";
+  };
+  const remove = (i) => {
+    setTracks((t) => t.filter((_, n) => n !== i));
+    setCurrent(0);
+    setPlaying(false);
+  };
+  return (
+    <div className="flex h-full min-h-0 bg-slate-950 text-white">
+      <aside className="w-48 shrink-0 border-r border-white/10 bg-white/[.03] p-4">
+        <div className="mb-6 flex items-center gap-2 font-semibold">
+          <Music2 size={20} />
+          Music
+        </div>
+        <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs hover:bg-white/15">
+          <Upload size={15} />
+          Add music
+          <input
+            hidden
+            type="file"
+            accept="audio/*"
+            multiple
+            onChange={upload}
+          />
+        </label>
+        <p className="mt-4 text-[11px] leading-5 text-white/45">
+          Upload audio files and build a local playlist.
+        </p>
+      </aside>
+      <section className="flex min-w-0 flex-1 flex-col">
+        <div className="flex-1 overflow-auto p-5">
+          <h2 className="text-lg font-semibold">Your playlist</h2>
+          {!tracks.length ? (
+            <div className="mt-8 rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-white/45">
+              No songs yet. Add an audio file.
+            </div>
+          ) : (
+            <div className="mt-4 space-y-2">
+              {tracks.map((t, i) => (
+                <div
+                  key={t.id}
+                  className={`flex items-center gap-3 rounded-xl p-3 ${i === current ? "bg-white/10" : "hover:bg-white/[.06]"}`}
+                >
+                  <button
+                    onClick={() => playIndex(i)}
+                    className="grid h-9 w-9 place-items-center rounded-lg bg-white/10"
+                  >
+                    {i === current && playing ? (
+                      <Pause size={16} />
+                    ) : (
+                      <Play size={16} />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => playIndex(i)}
+                    className="min-w-0 flex-1 truncate text-left text-sm"
+                  >
+                    {t.name}
+                  </button>
+                  <button
+                    onClick={() => remove(i)}
+                    className="rounded-lg p-2 text-white/45 hover:bg-red-500/15"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="border-t border-white/10 bg-white/[.03] p-4">
+          <div className="mb-3 truncate text-center text-xs text-white/65">
+            {track?.name || "Nothing playing"}
+          </div>
+          <div className="flex items-center justify-center gap-5">
+            <button
+              disabled={!tracks.length}
+              onClick={() => playIndex(Math.max(0, current - 1))}
+            >
+              <SkipBack />
+            </button>
+            <button
+              disabled={!track}
+              onClick={toggle}
+              className="grid h-11 w-11 place-items-center rounded-full bg-white text-slate-950 disabled:opacity-30"
+            >
+              {playing ? <Pause size={19} /> : <Play size={19} />}
+            </button>
+            <button
+              disabled={!tracks.length}
+              onClick={() =>
+                playIndex(Math.min(tracks.length - 1, current + 1))
+              }
+            >
+              <SkipForward />
+            </button>
+            <div className="ml-4 flex items-center gap-2">
+              <Volume2 size={16} />
+              <input
+                aria-label="Volume"
+                type="range"
+                min="0"
+                max="1"
+                step=".01"
+                value={volume}
+                onChange={(e) => setVolume(+e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+        {track && (
+          <audio
+            ref={audioRef}
+            src={track.url}
+            onEnded={() =>
+              current < tracks.length - 1
+                ? playIndex(current + 1)
+                : setPlaying(false)
+            }
+          />
+        )}
+      </section>
+    </div>
+  );
 }
 export default Music;

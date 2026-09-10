@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FilePlus2, Search, Trash2, Save, StickyNote, Clock3 } from "lucide-react";
+import {
+  FilePlus2,
+  Search,
+  Trash2,
+  Save,
+  StickyNote,
+  Clock3,
+} from "lucide-react";
 import { apiSync } from "../utils/sync";
 
 const STORAGE_KEY = "yashos_notes_v1";
@@ -9,8 +16,8 @@ const seedNotes = [
     id: 1,
     title: "Welcome to YashOS",
     content: "This is your first note. Start writing here...",
-    updatedAt: Date.now()
-  }
+    updatedAt: Date.now(),
+  },
 ];
 
 function loadNotes() {
@@ -32,16 +39,16 @@ function Notes() {
     apiSync("/sync/notes", { notes }).catch(() => {});
   }, [notes]);
 
-  const activeNote = notes.find(note => note.id === activeId) || null;
+  const activeNote = notes.find((note) => note.id === activeId) || null;
 
   const filteredNotes = useMemo(
     () =>
-      notes.filter(note =>
+      notes.filter((note) =>
         `${note.title} ${note.content}`
           .toLowerCase()
-          .includes(query.toLowerCase())
+          .includes(query.toLowerCase()),
       ),
-    [notes, query]
+    [notes, query],
   );
 
   const createNote = () => {
@@ -49,36 +56,36 @@ function Notes() {
       id: Date.now(),
       title: "Untitled Note",
       content: "",
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     };
-    setNotes(current => [note, ...current]);
+    setNotes((current) => [note, ...current]);
     setActiveId(note.id);
     setQuery("");
   };
 
   const updateActive = (field, value) => {
-    setNotes(current =>
-      current.map(note =>
+    setNotes((current) =>
+      current.map((note) =>
         note.id === activeId
           ? { ...note, [field]: value, updatedAt: Date.now() }
-          : note
-      )
+          : note,
+      ),
     );
   };
 
   const deleteActive = () => {
     if (!activeNote) return;
-    const remaining = notes.filter(note => note.id !== activeId);
+    const remaining = notes.filter((note) => note.id !== activeId);
     setNotes(remaining);
     setActiveId(remaining[0]?.id ?? null);
   };
 
-  const formatTime = timestamp =>
+  const formatTime = (timestamp) =>
     new Date(timestamp).toLocaleString([], {
       day: "2-digit",
       month: "short",
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
 
   return (
@@ -87,7 +94,9 @@ function Notes() {
         <div className="notes-header">
           <div>
             <strong>Notes</strong>
-            <small>{notes.length} note{notes.length === 1 ? "" : "s"}</small>
+            <small>
+              {notes.length} note{notes.length === 1 ? "" : "s"}
+            </small>
           </div>
           <button onClick={createNote} title="New note">
             <FilePlus2 size={17} />
@@ -98,13 +107,13 @@ function Notes() {
           <Search size={15} />
           <input
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Search notes..."
           />
         </div>
 
         <div className="notes-list">
-          {filteredNotes.map(note => (
+          {filteredNotes.map((note) => (
             <button
               key={note.id}
               className={`note-item ${activeId === note.id ? "selected" : ""}`}
@@ -138,14 +147,14 @@ function Notes() {
             <input
               className="note-title-input"
               value={activeNote.title}
-              onChange={e => updateActive("title", e.target.value)}
+              onChange={(e) => updateActive("title", e.target.value)}
               placeholder="Note title"
             />
 
             <textarea
               className="note-content-input"
               value={activeNote.content}
-              onChange={e => updateActive("content", e.target.value)}
+              onChange={(e) => updateActive("content", e.target.value)}
               placeholder="Start writing..."
             />
 

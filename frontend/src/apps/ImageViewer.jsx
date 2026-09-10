@@ -1,13 +1,125 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Image as ImageIcon, Upload, Trash2, ZoomIn, ZoomOut, RotateCcw, RotateCw } from "lucide-react";
+import {
+  Image as ImageIcon,
+  Upload,
+  Trash2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  RotateCw,
+} from "lucide-react";
 
-function ImageViewer(){
- const [images,setImages]=useState([]); const imagesRef=useRef([]); const [selected,setSelected]=useState(0); const [zoom,setZoom]=useState(1); const [rotation,setRotation]=useState(0);
- const current=images[selected];
- const add=(e)=>{const fs=[...e.target.files].filter(f=>f.type.startsWith("image/"));setImages(a=>[...a,...fs.map(f=>({id:crypto.randomUUID(),name:f.name,url:URL.createObjectURL(f)}))]);e.target.value=""};
- const remove=()=>{if(!current)return; URL.revokeObjectURL(current.url); const next=images.filter((_,i)=>i!==selected); setImages(next); setSelected(Math.max(0,Math.min(selected,next.length-1))); setZoom(1); setRotation(0)};
- useEffect(()=>{ imagesRef.current=images; },[images]);
- useEffect(()=>{ return ()=>{ imagesRef.current.forEach(i=>URL.revokeObjectURL(i.url)); }; },[]);
- return <div className="flex h-full min-h-0 bg-slate-950 text-white"><aside className="w-52 shrink-0 overflow-auto border-r border-white/10 p-3"><div className="mb-3 flex items-center gap-2 font-semibold"><ImageIcon size={19}/>Gallery</div><label className="mb-3 flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs"><Upload size={15}/>Add images<input hidden type="file" accept="image/*" multiple onChange={add}/></label>{images.map((im,i)=><button key={im.id} onClick={()=>{setSelected(i);setZoom(1);setRotation(0)}} className={`mb-2 w-full overflow-hidden rounded-xl border ${i===selected?'border-white/40 bg-white/10':'border-white/10'}`}><img src={im.url} alt="" className="h-20 w-full object-cover"/><span className="block truncate px-2 py-1 text-left text-[11px] text-white/70">{im.name}</span></button>)}</aside><main className="flex min-w-0 flex-1 flex-col"><div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3"><span className="max-w-[50%] truncate text-sm">{current?.name||"No image selected"}</span><div className="flex gap-1">{[[ZoomOut,()=>setZoom(z=>Math.max(.25,z-.25))],[ZoomIn,()=>setZoom(z=>Math.min(3,z+.25))],[RotateCcw,()=>setRotation(r=>r-90)],[RotateCw,()=>setRotation(r=>r+90)],[Trash2,remove]].map(([I,fn],i)=><button key={i} disabled={!current} onClick={fn} className="rounded-lg p-2 hover:bg-white/10 disabled:opacity-30"><I size={16}/></button>)}</div></div><div className="flex flex-1 items-center justify-center overflow-auto bg-black/20 p-5">{current?<img src={current.url} alt={current.name} style={{transform:`scale(${zoom}) rotate(${rotation}deg)`}} className="max-h-full max-w-full object-contain transition-transform"/>:<div className="text-center text-white/40"><ImageIcon size={54} className="mx-auto mb-3"/><p className="text-sm">Add an image to view it</p></div>}</div><div className="shrink-0 border-t border-white/10 px-4 py-2 text-center text-[11px] text-white/40">{current?`Zoom ${Math.round(zoom*100)}% • Rotation ${((rotation%360)+360)%360}°`:"Image Viewer"}</div></main></div>;
+function ImageViewer() {
+  const [images, setImages] = useState([]);
+  const imagesRef = useRef([]);
+  const [selected, setSelected] = useState(0);
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const current = images[selected];
+  const add = (e) => {
+    const fs = [...e.target.files].filter((f) => f.type.startsWith("image/"));
+    setImages((a) => [
+      ...a,
+      ...fs.map((f) => ({
+        id: crypto.randomUUID(),
+        name: f.name,
+        url: URL.createObjectURL(f),
+      })),
+    ]);
+    e.target.value = "";
+  };
+  const remove = () => {
+    if (!current) return;
+    URL.revokeObjectURL(current.url);
+    const next = images.filter((_, i) => i !== selected);
+    setImages(next);
+    setSelected(Math.max(0, Math.min(selected, next.length - 1)));
+    setZoom(1);
+    setRotation(0);
+  };
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
+  useEffect(() => {
+    return () => {
+      imagesRef.current.forEach((i) => URL.revokeObjectURL(i.url));
+    };
+  }, []);
+  return (
+    <div className="flex h-full min-h-0 bg-slate-950 text-white">
+      <aside className="w-52 shrink-0 overflow-auto border-r border-white/10 p-3">
+        <div className="mb-3 flex items-center gap-2 font-semibold">
+          <ImageIcon size={19} />
+          Gallery
+        </div>
+        <label className="mb-3 flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs">
+          <Upload size={15} />
+          Add images
+          <input hidden type="file" accept="image/*" multiple onChange={add} />
+        </label>
+        {images.map((im, i) => (
+          <button
+            key={im.id}
+            onClick={() => {
+              setSelected(i);
+              setZoom(1);
+              setRotation(0);
+            }}
+            className={`mb-2 w-full overflow-hidden rounded-xl border ${i === selected ? "border-white/40 bg-white/10" : "border-white/10"}`}
+          >
+            <img src={im.url} alt="" className="h-20 w-full object-cover" />
+            <span className="block truncate px-2 py-1 text-left text-[11px] text-white/70">
+              {im.name}
+            </span>
+          </button>
+        ))}
+      </aside>
+      <main className="flex min-w-0 flex-1 flex-col">
+        <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3">
+          <span className="max-w-[50%] truncate text-sm">
+            {current?.name || "No image selected"}
+          </span>
+          <div className="flex gap-1">
+            {[
+              [ZoomOut, () => setZoom((z) => Math.max(0.25, z - 0.25))],
+              [ZoomIn, () => setZoom((z) => Math.min(3, z + 0.25))],
+              [RotateCcw, () => setRotation((r) => r - 90)],
+              [RotateCw, () => setRotation((r) => r + 90)],
+              [Trash2, remove],
+            ].map(([I, fn], i) => (
+              <button
+                key={i}
+                disabled={!current}
+                onClick={fn}
+                className="rounded-lg p-2 hover:bg-white/10 disabled:opacity-30"
+              >
+                <I size={16} />
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-1 items-center justify-center overflow-auto bg-black/20 p-5">
+          {current ? (
+            <img
+              src={current.url}
+              alt={current.name}
+              style={{ transform: `scale(${zoom}) rotate(${rotation}deg)` }}
+              className="max-h-full max-w-full object-contain transition-transform"
+            />
+          ) : (
+            <div className="text-center text-white/40">
+              <ImageIcon size={54} className="mx-auto mb-3" />
+              <p className="text-sm">Add an image to view it</p>
+            </div>
+          )}
+        </div>
+        <div className="shrink-0 border-t border-white/10 px-4 py-2 text-center text-[11px] text-white/40">
+          {current
+            ? `Zoom ${Math.round(zoom * 100)}% • Rotation ${((rotation % 360) + 360) % 360}°`
+            : "Image Viewer"}
+        </div>
+      </main>
+    </div>
+  );
 }
 export default ImageViewer;

@@ -2,15 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Delete, History, RotateCcw } from "lucide-react";
 
 const keys = [
-  ["AC", "action"], ["⌫", "action"], ["%", "operator"], ["÷", "operator"],
-  ["7","number"],["8","number"],["9","number"],["×","operator"],
-  ["4","number"],["5","number"],["6","number"],["−","operator"],
-  ["1","number"],["2","number"],["3","number"],["+","operator"],
-  ["0","zero"],[".","number"],["=","equals"]
+  ["AC", "action"],
+  ["⌫", "action"],
+  ["%", "operator"],
+  ["÷", "operator"],
+  ["7", "number"],
+  ["8", "number"],
+  ["9", "number"],
+  ["×", "operator"],
+  ["4", "number"],
+  ["5", "number"],
+  ["6", "number"],
+  ["−", "operator"],
+  ["1", "number"],
+  ["2", "number"],
+  ["3", "number"],
+  ["+", "operator"],
+  ["0", "zero"],
+  [".", "number"],
+  ["=", "equals"],
 ];
 
 function calculate(a, op, b) {
-  const x = Number(a), y = Number(b);
+  const x = Number(a),
+    y = Number(b);
   if (!Number.isFinite(x) || !Number.isFinite(y)) return "Error";
   if (op === "+") return x + y;
   if (op === "−") return x - y;
@@ -67,7 +82,9 @@ function Calculator() {
     const expression = `${stored} ${operator} ${display} = ${result}`;
 
     setDisplay(String(result));
-    setHistory(current => [{ id: Date.now(), expression }, ...current].slice(0, 10));
+    setHistory((current) =>
+      [{ id: Date.now(), expression }, ...current].slice(0, 10),
+    );
     setStored(null);
     setOperator(null);
     setWaiting(true);
@@ -115,7 +132,11 @@ function Calculator() {
       <section className="flex min-w-0 flex-1 flex-col p-4">
         <div className="mb-3 flex items-center justify-between">
           <span className="text-xs text-white/50">Calculator</span>
-          <button onClick={clear} className="rounded-lg p-2 text-white/60 hover:bg-white/10" title="Clear">
+          <button
+            onClick={clear}
+            className="rounded-lg p-2 text-white/60 hover:bg-white/10"
+            title="Clear"
+          >
             <RotateCcw size={15} />
           </button>
         </div>
@@ -131,7 +152,8 @@ function Calculator() {
             <button
               key={key}
               onClick={() => {
-                if (type === "number" || type === "zero") key === "." ? inputDecimal() : inputDigit(key);
+                if (type === "number" || type === "zero")
+                  key === "." ? inputDecimal() : inputDigit(key);
                 else if (type === "operator") chooseOperator(key);
                 else if (type === "equals") equals();
                 else if (key === "AC") clear();
@@ -139,11 +161,15 @@ function Calculator() {
                 else if (key === "%") percent();
               }}
               className={`rounded-xl text-sm font-semibold transition active:scale-95 ${
-                type === "operator" ? "bg-violet-700/80 hover:bg-violet-600" :
-                type === "equals" ? "bg-blue-600 hover:bg-blue-500" :
-                type === "action" ? "bg-white/10 hover:bg-white/15" :
-                type === "zero" ? "col-span-2 bg-white/10 hover:bg-white/15" :
-                "bg-white/10 hover:bg-white/15"
+                type === "operator"
+                  ? "bg-violet-700/80 hover:bg-violet-600"
+                  : type === "equals"
+                    ? "bg-blue-600 hover:bg-blue-500"
+                    : type === "action"
+                      ? "bg-white/10 hover:bg-white/15"
+                      : type === "zero"
+                        ? "col-span-2 bg-white/10 hover:bg-white/15"
+                        : "bg-white/10 hover:bg-white/15"
               }`}
             >
               {key === "⌫" ? <Delete size={18} className="mx-auto" /> : key}
@@ -157,12 +183,19 @@ function Calculator() {
           <History size={15} /> History
         </div>
         <div className="space-y-2 overflow-auto">
-          {history.length ? history.map(item => (
-            <div key={item.id} className="rounded-lg bg-white/5 p-2 text-[10px] leading-4 text-white/65">
-              {item.expression}
-            </div>
-          )) : (
-            <p className="text-[10px] leading-4 text-white/35">Your calculations will appear here.</p>
+          {history.length ? (
+            history.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-lg bg-white/5 p-2 text-[10px] leading-4 text-white/65"
+              >
+                {item.expression}
+              </div>
+            ))
+          ) : (
+            <p className="text-[10px] leading-4 text-white/35">
+              Your calculations will appear here.
+            </p>
           )}
         </div>
       </aside>

@@ -3,10 +3,27 @@ import { Check, Moon, Monitor, Palette, RotateCcw, Sun } from "lucide-react";
 import { DEFAULT_SETTINGS } from "../utils/theme";
 
 const wallpapers = [
-  { id: "gradient", name: "Aurora", className: "bg-gradient-to-br from-slate-950 via-blue-900 to-cyan-700" },
-  { id: "sunset", name: "Sunset", className: "bg-gradient-to-br from-indigo-950 via-fuchsia-800 to-orange-500" },
-  { id: "forest", name: "Forest", className: "bg-gradient-to-br from-emerald-950 via-green-800 to-lime-500" },
-  { id: "ocean", name: "Ocean", className: "bg-gradient-to-br from-sky-950 via-blue-700 to-teal-400" },
+  {
+    id: "gradient",
+    name: "Aurora",
+    className: "bg-gradient-to-br from-slate-950 via-blue-900 to-cyan-700",
+  },
+  {
+    id: "sunset",
+    name: "Sunset",
+    className:
+      "bg-gradient-to-br from-indigo-950 via-fuchsia-800 to-orange-500",
+  },
+  {
+    id: "forest",
+    name: "Forest",
+    className: "bg-gradient-to-br from-emerald-950 via-green-800 to-lime-500",
+  },
+  {
+    id: "ocean",
+    name: "Ocean",
+    className: "bg-gradient-to-br from-sky-950 via-blue-700 to-teal-400",
+  },
 ];
 
 const themes = [
@@ -20,7 +37,9 @@ export default function Settings() {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem("yashos_settings_v1");
-      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+      return saved
+        ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) }
+        : DEFAULT_SETTINGS;
     } catch {
       return DEFAULT_SETTINGS;
     }
@@ -28,7 +47,9 @@ export default function Settings() {
 
   useEffect(() => {
     localStorage.setItem("yashos_settings_v1", JSON.stringify(settings));
-    window.dispatchEvent(new CustomEvent("yashos-settings-change", { detail: settings }));
+    window.dispatchEvent(
+      new CustomEvent("yashos-settings-change", { detail: settings }),
+    );
   }, [settings]);
 
   const update = (key, value) => {
@@ -41,7 +62,9 @@ export default function Settings() {
     <div className="h-full overflow-y-auto bg-slate-50 p-5 text-slate-900 dark:bg-slate-900 dark:text-white">
       <div className="mx-auto max-w-3xl">
         <div className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">System</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            System
+          </p>
           <h2 className="mt-1 text-2xl font-bold">Settings</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Customize the YashOS desktop experience.
@@ -53,7 +76,9 @@ export default function Settings() {
             <Monitor className="text-blue-500" size={20} />
             <div>
               <h3 className="font-semibold">Appearance</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Choose the interface mode.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Choose the interface mode.
+              </p>
             </div>
           </div>
 
@@ -85,7 +110,9 @@ export default function Settings() {
             <Palette className="text-violet-500" size={20} />
             <div>
               <h3 className="font-semibold">Wallpaper</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Select your desktop background.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Select your desktop background.
+              </p>
             </div>
           </div>
 
@@ -95,7 +122,9 @@ export default function Settings() {
                 key={wallpaper.id}
                 onClick={() => update("wallpaper", wallpaper.id)}
                 className={`group overflow-hidden rounded-xl border-2 text-left ${
-                  settings.wallpaper === wallpaper.id ? "border-blue-500" : "border-transparent"
+                  settings.wallpaper === wallpaper.id
+                    ? "border-blue-500"
+                    : "border-transparent"
                 }`}
               >
                 <div className={`h-20 ${wallpaper.className}`} />
@@ -113,7 +142,9 @@ export default function Settings() {
             <div className="h-5 w-5 rounded-full bg-gradient-to-br from-blue-500 to-violet-500" />
             <div>
               <h3 className="font-semibold">Accent Color</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Choose a system accent.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Choose a system accent.
+              </p>
             </div>
           </div>
 
@@ -140,7 +171,9 @@ export default function Settings() {
         <section className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <div>
             <h3 className="font-semibold">Reset settings</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Restore YashOS default appearance.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Restore YashOS default appearance.
+            </p>
           </div>
           <button
             onClick={reset}
