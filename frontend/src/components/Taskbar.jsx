@@ -19,7 +19,7 @@ function Taskbar({ windows, onOpen, onFocus, onMinimize, onStart, onSearch }) {
   };
   return <footer className="yashos-taskbar fixed bottom-0 left-0 right-0 z-[120] flex h-[68px] items-center border-t px-2 shadow-[0_-10px_35px_rgba(0,0,0,.18)] backdrop-blur-2xl sm:px-4">
     <div className="flex w-[190px] shrink-0 items-center gap-1 sm:w-[250px] sm:gap-2">
-      <button className="yashos-taskbar-button flex h-11 items-center gap-2 rounded-xl px-2 text-sm font-semibold sm:px-3" onClick={onStart}><Grid2X2 size={21}/> <span className="hidden sm:inline">YashOS</span></button>
+      <button className="yashos-taskbar-button flex h-11 items-center gap-2 rounded-xl px-2 text-sm font-semibold sm:px-3" onClick={onStart}><Grid2X2 size={21}/> <span className="hidden sm:inline">WebOS</span></button>
       <button className="yashos-taskbar-button grid h-11 w-11 shrink-0 place-items-center rounded-xl" onClick={onSearch} aria-label="Search"><Search size={21}/></button>
     </div>
     <div className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto px-1">
