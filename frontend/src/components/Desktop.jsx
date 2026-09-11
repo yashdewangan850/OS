@@ -76,7 +76,7 @@ function DesktopIcon({ app, position, onOpen, onMove }) {
       offsetY: e.clientY - rect.top,
     };
     e.currentTarget.setPointerCapture?.(e.pointerId);
-  };
+  };  
 
   const move = (e) => {
     if (!drag.current.active) return;

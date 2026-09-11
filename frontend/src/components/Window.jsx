@@ -75,14 +75,27 @@ function getDefaultSize(title, viewport) {
   };
 }
 
-function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChange }) {
+function Window({
+  app,
+  onClose,
+  onMinimize,
+  onMaximize,
+  onFocus,
+  onGeometryChange,
+}) {
   const Icon = icons[app.title] || Square;
-  const [viewport, setViewport] = useState({ width: window.innerWidth, height: window.innerHeight });
+  const [viewport, setViewport] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
   const defaultSize = useMemo(
     () => getDefaultSize(app.title, viewport),
     [app.title, viewport.width, viewport.height],
   );
-  const [position, setPosition] = useState({ x: Number.isFinite(Number(app.x)) ? Number(app.x) : 180, y: Number.isFinite(Number(app.y)) ? Number(app.y) : 90 });
+  const [position, setPosition] = useState({
+    x: Number.isFinite(Number(app.x)) ? Number(app.x) : 180,
+    y: Number.isFinite(Number(app.y)) ? Number(app.y) : 90,
+  });
   const [dimensions, setDimensions] = useState({
     width: app.width ?? defaultSize.width,
     height: app.height ?? defaultSize.height,
@@ -91,7 +104,8 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
   const [snapPreview, setSnapPreview] = useState(null);
 
   useEffect(() => {
-    const update = () => setViewport({ width: window.innerWidth, height: window.innerHeight });
+    const update = () =>
+      setViewport({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
@@ -99,29 +113,75 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
   useEffect(() => {
     if (app.maximized) return;
     setPosition({
-      x: Number.isFinite(Number(app.x)) ? Number(app.x) : Math.round((viewport.width - defaultSize.width) / 2),
-      y: Number.isFinite(Number(app.y)) && Number(app.y) >= TOP_OFFSET ? Number(app.y) : Math.max(TOP_OFFSET, Math.round((viewport.height - defaultSize.height - TASKBAR_SPACE) / 2) + TOP_OFFSET / 2),
+      x: Number.isFinite(Number(app.x))
+        ? Number(app.x)
+        : Math.round((viewport.width - defaultSize.width) / 2),
+      y:
+        Number.isFinite(Number(app.y)) && Number(app.y) >= TOP_OFFSET
+          ? Number(app.y)
+          : Math.max(
+              TOP_OFFSET,
+              Math.round(
+                (viewport.height - defaultSize.height - TASKBAR_SPACE) / 2,
+              ) +
+                TOP_OFFSET / 2,
+            ),
     });
     setDimensions({
-      width: Number.isFinite(Number(app.width)) ? Number(app.width) : defaultSize.width,
-      height: Number.isFinite(Number(app.height)) ? Number(app.height) : defaultSize.height,
+      width: Number.isFinite(Number(app.width))
+        ? Number(app.width)
+        : defaultSize.width,
+      height: Number.isFinite(Number(app.height))
+        ? Number(app.height)
+        : defaultSize.height,
     });
-  }, [app.id, app.maximized, app.x, app.y, app.width, app.height, defaultSize.width, defaultSize.height]);
+  }, [
+    app.id,
+    app.maximized,
+    app.x,
+    app.y,
+    app.width,
+    app.height,
+    defaultSize.width,
+    defaultSize.height,
+  ]);
 
-  const maxHeight = Math.max(MIN_HEIGHT, viewport.height - TOP_OFFSET - TASKBAR_SPACE);
+  const maxHeight = Math.max(
+    MIN_HEIGHT,
+    viewport.height - TOP_OFFSET - TASKBAR_SPACE,
+  );
   const maxNormalWidth = Math.max(MIN_WIDTH, viewport.width - 16);
-  const normalWidth = Math.min(Math.max(MIN_WIDTH, dimensions.width), maxNormalWidth);
-  const normalHeight = Math.min(Math.max(MIN_HEIGHT, dimensions.height), maxHeight);
+  const normalWidth = Math.min(
+    Math.max(MIN_WIDTH, dimensions.width),
+    maxNormalWidth,
+  );
+  const normalHeight = Math.min(
+    Math.max(MIN_HEIGHT, dimensions.height),
+    maxHeight,
+  );
 
   const geometry = app.maximized
     ? app.snap === "left"
-      ? { x: 0, y: TOP_OFFSET, width: Math.floor(viewport.width / 2), height: maxHeight }
+      ? {
+          x: 0,
+          y: TOP_OFFSET,
+          width: Math.floor(viewport.width / 2),
+          height: maxHeight,
+        }
       : app.snap === "right"
-        ? { x: Math.floor(viewport.width / 2), y: TOP_OFFSET, width: Math.ceil(viewport.width / 2), height: maxHeight }
+        ? {
+            x: Math.floor(viewport.width / 2),
+            y: TOP_OFFSET,
+            width: Math.ceil(viewport.width / 2),
+            height: maxHeight,
+          }
         : { x: 0, y: TOP_OFFSET, width: viewport.width, height: maxHeight }
     : {
         x: Math.max(8, Math.min(position.x, viewport.width - normalWidth - 8)),
-        y: Math.max(TOP_OFFSET, Math.min(position.y, viewport.height - TASKBAR_SPACE - normalHeight)),
+        y: Math.max(
+          TOP_OFFSET,
+          Math.min(position.y, viewport.height - TASKBAR_SPACE - normalHeight),
+        ),
         width: normalWidth,
         height: normalHeight,
       };
@@ -137,7 +197,8 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
     const edge = 32;
     if (data.y <= TOP_OFFSET - 12) setSnapPreview("max");
     else if (data.x <= edge) setSnapPreview("left");
-    else if (data.x + geometry.width >= viewport.width - edge) setSnapPreview("right");
+    else if (data.x + geometry.width >= viewport.width - edge)
+      setSnapPreview("right");
     else setSnapPreview(null);
   };
 
@@ -163,8 +224,17 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
       return;
     }
 
-    const nextX = Math.max(8, Math.min(data.x, Math.max(8, viewport.width - currentWidth - 8)));
-    const nextY = Math.max(TOP_OFFSET, Math.min(data.y, Math.max(TOP_OFFSET, viewport.height - TASKBAR_SPACE - currentHeight)));
+    const nextX = Math.max(
+      8,
+      Math.min(data.x, Math.max(8, viewport.width - currentWidth - 8)),
+    );
+    const nextY = Math.max(
+      TOP_OFFSET,
+      Math.min(
+        data.y,
+        Math.max(TOP_OFFSET, viewport.height - TASKBAR_SPACE - currentHeight),
+      ),
+    );
     setPosition({ x: nextX, y: nextY });
     onGeometryChange?.(app.id, { x: nextX, y: nextY });
     setSnapPreview(null);
@@ -176,41 +246,99 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
   };
 
   const handleResize = (_, __, ref, ___, nextPosition) => {
-    const nextWidth = Math.min(Math.max(MIN_WIDTH, ref.offsetWidth), maxNormalWidth);
-    const nextHeight = Math.min(Math.max(MIN_HEIGHT, ref.offsetHeight), maxHeight);
-    const nextX = Math.max(8, Math.min(nextPosition.x, viewport.width - nextWidth - 8));
-    const nextY = Math.max(TOP_OFFSET, Math.min(nextPosition.y, viewport.height - TASKBAR_SPACE - nextHeight));
+    const nextWidth = Math.min(
+      Math.max(MIN_WIDTH, ref.offsetWidth),
+      maxNormalWidth,
+    );
+    const nextHeight = Math.min(
+      Math.max(MIN_HEIGHT, ref.offsetHeight),
+      maxHeight,
+    );
+    const nextX = Math.max(
+      8,
+      Math.min(nextPosition.x, viewport.width - nextWidth - 8),
+    );
+    const nextY = Math.max(
+      TOP_OFFSET,
+      Math.min(nextPosition.y, viewport.height - TASKBAR_SPACE - nextHeight),
+    );
     setDimensions({ width: nextWidth, height: nextHeight });
     setPosition({ x: nextX, y: nextY });
   };
 
   const handleResizeStop = (_, __, ref, ___, nextPosition) => {
-    const nextWidth = Math.min(Math.max(MIN_WIDTH, ref.offsetWidth), maxNormalWidth);
-    const nextHeight = Math.min(Math.max(MIN_HEIGHT, ref.offsetHeight), maxHeight);
-    const nextX = Math.max(8, Math.min(nextPosition.x, viewport.width - nextWidth - 8));
-    const nextY = Math.max(TOP_OFFSET, Math.min(nextPosition.y, viewport.height - TASKBAR_SPACE - nextHeight));
+    const nextWidth = Math.min(
+      Math.max(MIN_WIDTH, ref.offsetWidth),
+      maxNormalWidth,
+    );
+    const nextHeight = Math.min(
+      Math.max(MIN_HEIGHT, ref.offsetHeight),
+      maxHeight,
+    );
+    const nextX = Math.max(
+      8,
+      Math.min(nextPosition.x, viewport.width - nextWidth - 8),
+    );
+    const nextY = Math.max(
+      TOP_OFFSET,
+      Math.min(nextPosition.y, viewport.height - TASKBAR_SPACE - nextHeight),
+    );
     setDragging(false);
     setDimensions({ width: nextWidth, height: nextHeight });
     setPosition({ x: nextX, y: nextY });
-    onGeometryChange?.(app.id, { x: nextX, y: nextY, width: nextWidth, height: nextHeight });
+    onGeometryChange?.(app.id, {
+      x: nextX,
+      y: nextY,
+      width: nextWidth,
+      height: nextHeight,
+    });
     onFocus(app.id);
   };
 
   let content;
   switch (app.title) {
-    case "Files": content = <FileManager />; break;
-    case "Notes": content = <Notes />; break;
-    case "Calculator": content = <Calculator />; break;
-    case "Terminal": content = <Terminal />; break;
-    case "Browser": content = <Browser />; break;
-    case "Settings": content = <Settings />; break;
-    case "Trash": content = <Trash />; break;
-    case "Calendar": content = <Calendar />; break;
-    case "Music": content = <Music />; break;
-    case "Image Viewer": content = <ImageViewer />; break;
-    case "AI Assistant": content = <AIAssistant />; break;
-    case "Account": content = <Auth />; break;
-    default: content = <div className="flex h-full items-center justify-center text-white/70">{app.title}</div>;
+    case "Files":
+      content = <FileManager />;
+      break;
+    case "Notes":
+      content = <Notes />;
+      break;
+    case "Calculator":
+      content = <Calculator />;
+      break;
+    case "Terminal":
+      content = <Terminal />;
+      break;
+    case "Browser":
+      content = <Browser />;
+      break;
+    case "Settings":
+      content = <Settings />;
+      break;
+    case "Trash":
+      content = <Trash />;
+      break;
+    case "Calendar":
+      content = <Calendar />;
+      break;
+    case "Music":
+      content = <Music />;
+      break;
+    case "Image Viewer":
+      content = <ImageViewer />;
+      break;
+    case "AI Assistant":
+      content = <AIAssistant />;
+      break;
+    case "Account":
+      content = <Auth />;
+      break;
+    default:
+      content = (
+        <div className="flex h-full items-center justify-center text-white/70">
+          {app.title}
+        </div>
+      );
   }
 
   const snapClass =
@@ -220,7 +348,11 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
         ? "left-2 top-16 bottom-[76px] w-[calc(50%-12px)]"
         : "right-2 top-16 bottom-[76px] w-[calc(50%-12px)]";
 
-  const maximizeIcon = app.maximized ? <Maximize2 size={14} className="mx-auto" /> : <Square size={14} className="mx-auto" />;
+  const maximizeIcon = app.maximized ? (
+    <Maximize2 size={14} className="mx-auto" />
+  ) : (
+    <Square size={14} className="mx-auto" />
+  );
 
   return (
     <Rnd
@@ -258,7 +390,9 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
     >
       <section className="yashos-window relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-white/15 bg-slate-900/95 text-white shadow-[0_25px_70px_rgba(0,0,0,.42)] backdrop-blur-xl">
         {snapPreview && !app.maximized && (
-          <div className={`pointer-events-none fixed z-[500] ${snapClass} rounded-2xl border-2 border-white/30 bg-white/10 backdrop-blur-sm`} />
+          <div
+            className={`pointer-events-none fixed z-[500] ${snapClass} rounded-2xl border-2 border-white/30 bg-white/10 backdrop-blur-sm`}
+          />
         )}
 
         <header
@@ -271,22 +405,35 @@ function Window({ app, onClose, onMinimize, onMaximize, onFocus, onGeometryChang
           </div>
 
           <div className="yashos-window-controls flex h-full shrink-0">
-            <button type="button" className="w-11 text-white hover:bg-white/10" onClick={() => onMinimize(app.id)} aria-label="Minimize">
+            <button
+              type="button"
+              className="w-11 text-white hover:bg-white/10"
+              onClick={() => onMinimize(app.id)}
+              aria-label="Minimize"
+            >
               <Minus size={16} className="mx-auto" />
             </button>
-            <button type="button" className="w-11 text-white hover:bg-white/10" onClick={() => onMaximize(app.id)} aria-label={app.maximized ? "Restore" : "Maximize"}>
+            <button
+              type="button"
+              className="w-11 text-white hover:bg-white/10"
+              onClick={() => onMaximize(app.id)}
+              aria-label={app.maximized ? "Restore" : "Maximize"}
+            >
               {maximizeIcon}
             </button>
-            <button type="button" className="w-11 text-white hover:bg-red-600" onClick={() => onClose(app.id)} aria-label="Close">
+            <button
+              type="button"
+              className="w-11 text-white hover:bg-red-600"
+              onClick={() => onClose(app.id)}
+              aria-label="Close"
+            >
               <X size={16} className="mx-auto" />
             </button>
           </div>
         </header>
 
         <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
-          <ErrorBoundary>
-            {content}
-          </ErrorBoundary>
+          <ErrorBoundary>{content}</ErrorBoundary>
         </div>
       </section>
     </Rnd>
